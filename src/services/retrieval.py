@@ -27,7 +27,7 @@ class ContextService:
             UserActivity(
                 time_ago=self._format_time_ago(e.created_at),
                 action=e.semantic_label,
-                session_id=e.session
+                session_id=e.session_id
             ) for e in events
         ]
 
