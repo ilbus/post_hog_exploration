@@ -8,17 +8,19 @@ from datetime import datetime
 API_URL = "http://localhost:8000/ingest"
 API_KEY = os.getenv("API_SECRET_KEY", "local_dev_secret_key_12345")
 
+
 def generate_payload():
     return {
         "event": "$autocapture",
-        "distinct_id": f"user_{random.randint(1,3)}",
+        "distinct_id": f"user_{random.randint(1, 3)}",
         "timestamp": datetime.now().isoformat(),
         "properties": {
             "$session_id": str(uuid.uuid4()),
             "$element_text": "Upgrade Plan",
-            "attr__class": "btn btn-primary upgrade-btn"
-        }
+            "attr__class": "btn btn-primary upgrade-btn",
+        },
     }
+
 
 if __name__ == "__main__":
     headers = {"X-API-Key": API_KEY}

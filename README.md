@@ -1,4 +1,4 @@
-# Post Hog Exploartion Pipeline 
+# Post Hog Exploartion Pipeline
 
 
 A production-ready data pipeline designed to transform raw user clickstreams (PostHog events) into semantic "User Context" for AI Chatbots.
