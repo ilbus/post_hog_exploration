@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from datetime import datetime
 from src.db.models import EventModel
 from src.core.schemas import UserContextResponse, UserActivity
 
 
 class ContextService:
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
 
     def _format_time_ago(self, dt: datetime) -> str:
@@ -15,14 +16,19 @@ class ContextService:
         minutes = int(diff.total_seconds() / 60)
         return f"{minutes} minutes ago" if minutes < 60 else f"{int(minutes / 60)}h ago"
 
-    def get_user_context(self, user_id: str, limit: int = 10) -> UserContextResponse:
-        events = (
-            self.db.query(EventModel)
-            .filter(EventModel.user_id == user_id)
+    async def get_user_context(
+        self, user_id: str, limit: int = 10
+    ) -> UserContextResponse:
+        query = (
+            select(EventModel)
+            .where(EventModel.user_id == user_id)
             .order_by(EventModel.created_at.desc())
             .limit(limit)
-            .all()
         )
+
+        query_result = await self.db.execute(query)
+
+        events = query_result.scalars().all()
 
         if not events:
             return UserContextResponse(

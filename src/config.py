@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     DATABASE_URL: str
+    ASYNC_DATABASE_URL: str
     REDIS_URL: str
     QUEUE_NAME: str
     DLQ_NAME: str
