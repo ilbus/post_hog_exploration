@@ -7,7 +7,12 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     REDIS_URL: str
     QUEUE_NAME: str
+    DLQ_NAME: str
     API_SECRET_KEY: str
+
+    # worker settings
+    BATCH_SIZE: int = 100
+    FLUSH_INTERVAL: float = 2.0 # seconds
 
     class Config:
         env_file = ".env"
