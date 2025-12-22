@@ -1,4 +1,3 @@
-import redis
 import logging
 from redis import Redis
 from pydantic import ValidationError
@@ -16,9 +15,8 @@ class RedisQueue(MessageQueue):
 
     def push(self, event: RawEvent) -> None:
         self.client.lpush(settings.QUEUE_NAME, event.model_dump_json())
-    
+
     def pop(self) -> RawEvent | None:
-        
         try:
             # get from queue with block so wait sometime until something arrives
             result = self.client.blpop(settings.QUEUE_NAME, timeout=1)
@@ -29,7 +27,7 @@ class RedisQueue(MessageQueue):
             raw_data = result[1]
 
             return RawEvent.model_validate_json(raw_data)
-        
+
         except ValidationError as e:
             logger.error(f" Invalid Schema: {e}")
             return None

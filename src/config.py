@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "PostHog Exploration Pipeline"
     ENVIRONMENT: str = "development"
@@ -12,11 +13,12 @@ class Settings(BaseSettings):
 
     # worker settings
     BATCH_SIZE: int = 100
-    FLUSH_INTERVAL: float = 2.0 # seconds
+    FLUSH_INTERVAL: float = 2.0  # seconds
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
         extra = "ignore"
+
 
 settings = Settings()
