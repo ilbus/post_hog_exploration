@@ -12,7 +12,7 @@ API_KEY = os.getenv("API_SECRET_KEY", "local_dev_secret_key_12345")
 def generate_payload():
     return {
         "event": "$autocapture",
-        "distinct_id": f"user_{random.randint(1, 3)}",
+        "distinct_id": f"user_{random.randint(5, 8)}",
         "timestamp": datetime.now().isoformat(),
         "properties": {
             "$session_id": str(uuid.uuid4()),

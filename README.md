@@ -64,8 +64,14 @@ DB_USER=user
 DB_PASS=password
 DB_NAME=pipeline_db
 DATABASE_URL=postgresql://user:password@localhost:5432/pipeline_db
+ASYNC_DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/pipeline_db
 REDIS_URL=redis://localhost:6379/0
 QUEUE_NAME=event_stream
+DLQ_NAME=dlq_event_stream
+
+# Worker setup
+BATCH_SIZE=50
+FLUSH_INTERVAL=2.0
 ```
 
 ### 4. Running the System

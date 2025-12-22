@@ -1,5 +1,5 @@
 import logging
-from redis import Redis
+from redis.asyncio import Redis
 from pydantic import ValidationError
 from redis.exceptions import RedisError
 from src.config import settings
@@ -13,13 +13,13 @@ class RedisQueue(MessageQueue):
     def __init__(self):
         self.client = Redis.from_url(settings.REDIS_URL)
 
-    def push(self, event: RawEvent) -> None:
-        self.client.lpush(settings.QUEUE_NAME, event.model_dump_json())
+    async def push(self, event: RawEvent) -> None:
+        await self.client.lpush(settings.QUEUE_NAME, event.model_dump_json())
 
-    def pop(self) -> RawEvent | None:
+    async def pop(self) -> RawEvent | None:
         try:
             # get from queue with block so wait sometime until something arrives
-            result = self.client.blpop(settings.QUEUE_NAME, timeout=1)
+            result = await self.client.blpop(settings.QUEUE_NAME, timeout=1)
 
             if not result:
                 return None
@@ -37,3 +37,6 @@ class RedisQueue(MessageQueue):
         except Exception as e:
             logger.error(f" Error: {e}")
             return None
+
+    async def close(self) -> None:
+        await self.client.close()
