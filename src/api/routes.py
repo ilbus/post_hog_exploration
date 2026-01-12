@@ -12,7 +12,7 @@ router = APIRouter()
 
 async def get_queue():
     # In a real app, you might want to share the pool/client instance
-    # via app.state, but creating RedisQueue() is "cheap" if connection 
+    # via app.state, but creating RedisQueue() is "cheap" if connection
     # pool is handled internally by redis-py (which it is).
     queue = RedisQueue()
     try:

@@ -20,10 +20,7 @@ class Settings(BaseSettings):
     POOL_SIZE: int = 5
     MAX_OVERFLOW: int = 10
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 settings = Settings()

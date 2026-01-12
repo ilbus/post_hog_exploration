@@ -38,9 +38,7 @@ async def flush_batch(batch_buffer, queue):
                 for item in batch_buffer:
                     pipeline.lpush(settings.DLQ_NAME, item.raw_payload)
                 await pipeline.execute()
-            logger.info(
-                f"Moved {len(batch_buffer)} events to DLQ: {settings.DLQ_NAME}"
-            )
+            logger.info(f"Moved {len(batch_buffer)} events to DLQ: {settings.DLQ_NAME}")
         except Exception as e_dlq:
             logger.error(f"Error moving events to DLQ during flush: {e_dlq}")
     except Exception as e:
@@ -57,7 +55,7 @@ async def run_worker():
 
     batch_buffer = []
     last_flush_time = asyncio.get_running_loop().time()
-    
+
     running = True
 
     while running:
@@ -69,9 +67,9 @@ async def run_worker():
                 running = False
                 break
             except Exception as e:
-                 logger.error(f"Error popping from queue: {e}")
-                 await asyncio.sleep(1)
-                 continue
+                logger.error(f"Error popping from queue: {e}")
+                await asyncio.sleep(1)
+                continue
 
             if event:
                 try:
@@ -89,7 +87,7 @@ async def run_worker():
                     # Send raw event back to DLQ if possible
                     try:
                         await queue.push_raw(settings.DLQ_NAME, event.model_dump_json())
-                        logger.info(f"Moved failed enrichment event to DLQ")
+                        logger.info("Moved failed enrichment event to DLQ")
                     except Exception as dlq_ex:
                         logger.error(f"Failed to push to DLQ: {dlq_ex}")
                     continue
@@ -105,22 +103,22 @@ async def run_worker():
                 await flush_batch(batch_buffer, queue)
                 batch_buffer = []
                 last_flush_time = current_time
-            
+
             # Optional wait if empty
             if not event and running:
-                 await asyncio.sleep(0.1)
+                await asyncio.sleep(0.1)
 
         except GracefulExit:
             running = False
         except Exception as e:
             logger.error(f"Error in worker loop: {e}")
             await asyncio.sleep(1)
-    
+
     # Final cleanup
     logger.info("Worker loop finished. Flushing remaining buffer...")
     if batch_buffer:
         await flush_batch(batch_buffer, queue)
-    
+
     await queue.close()
     logger.info("Worker shutdown complete.")
 
