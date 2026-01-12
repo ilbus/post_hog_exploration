@@ -16,6 +16,9 @@ class RedisQueue(MessageQueue):
     async def push(self, event: RawEvent) -> None:
         await self.client.lpush(settings.QUEUE_NAME, event.model_dump_json())
 
+    async def push_raw(self, queue_name: str, payload: str) -> None:
+        await self.client.lpush(queue_name, payload)
+
     async def pop(self) -> RawEvent | None:
         try:
             # get from queue with block so wait sometime until something arrives

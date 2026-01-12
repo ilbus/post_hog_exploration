@@ -123,3 +123,15 @@ uv run --env-file .env scripts/mock_traffic.py
           "recent_history": [...]
         }
         ```
+
+## 🔐 Security & Best Practices
+
+### Secret Management
+For local development, you can use `.env` files.
+*   **Warning:** Ensure `.env` is ignored by git to avoid obtaining secrets.
+*   *Recommendation:* In production, avoid files and use environment variables injected by your platform (AWS Secrets Manager, Kubernetes Secrets, etc.).
+
+### Worker Reliability
+The worker is hardened for production:
+*   **Graceful Shutdown:** Handles `SIGTERM` / `SIGINT` to flush pending data before exiting.
+*   **Dead Letter Queue (DLQ):** Failed events (parsing/enrichment errors) are moved to `dlq_event_stream` instead of being lost.
