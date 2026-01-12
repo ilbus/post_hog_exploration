@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from datetime import datetime
+from datetime import datetime, timezone
 from src.db.models import EventModel
 from src.core.schemas import UserContextResponse, UserActivity
 
@@ -12,7 +12,14 @@ class ContextService:
     def _format_time_ago(self, dt: datetime) -> str:
         if not dt:
             return "Unknown"
-        diff = datetime.now() - dt
+        
+        # Ensure 'dt' is treated as UTC if naive (assuming DB stores UTC)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+            
+        now = datetime.now(timezone.utc)
+        diff = now - dt
+        
         minutes = int(diff.total_seconds() / 60)
         return f"{minutes} minutes ago" if minutes < 60 else f"{int(minutes / 60)}h ago"
 

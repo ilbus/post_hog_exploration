@@ -2,6 +2,9 @@
 name = "post-hog-exploration"
 version = "0.1.0"
 description = "Add your description here"
+authors = [
+    {name = "ilbus", email = "pentax.rdx@gmail.com"}
+]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -17,6 +20,14 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
     "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
     "requests>=2.32.5",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+testpaths = ["tests"]
+asyncio_mode = "auto"
