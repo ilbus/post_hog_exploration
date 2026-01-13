@@ -96,7 +96,41 @@ uv run python -m src.worker.main
 uv run --env-file .env scripts/mock_traffic.py
 ```
 
+
 ---
+
+## 🐳 Running with Docker (Recommended)
+You can run the entire system (API, Worker, DB, Redis) with a single command. The Docker setup matches the production environment (Python 3.13) and **automatically applies database migrations** on startup.
+
+```bash
+docker-compose up --build
+```
+
+**Services:**
+*   `api`: Host 0.0.0.0:8000
+*   `worker`: Background processor
+*   `db`: Postgres 15
+*   `redis`: Queue Broker
+
+---
+
+## 🗄️ Database Migrations
+We use **Alembic** for database schema version control. The app does not assume schemas exist; they must be applied via migrations.
+
+**Applying Migrations:**
+(Happens automatically in Docker, but manually for local dev)
+```bash
+uv run alembic upgrade head
+```
+
+**Creating New Migrations:**
+If you modify `src/db/models.py`, generate a new migration file:
+```bash
+uv run alembic revision --autogenerate -m "describe your change"
+```
+
+---
+
 
 ## ✅ Verification: How to know it works
 
@@ -123,3 +157,15 @@ uv run --env-file .env scripts/mock_traffic.py
           "recent_history": [...]
         }
         ```
+
+## 🔐 Security & Best Practices
+
+### Secret Management
+For local development, you can use `.env` files.
+*   **Warning:** Ensure `.env` is ignored by git to avoid obtaining secrets.
+*   *Recommendation:* In production, avoid files and use environment variables injected by your platform (AWS Secrets Manager, Kubernetes Secrets, etc.).
+
+### Worker Reliability
+The worker is hardened for production:
+*   **Graceful Shutdown:** Handles `SIGTERM` / `SIGINT` to flush pending data before exiting.
+*   **Dead Letter Queue (DLQ):** Failed events (parsing/enrichment errors) are moved to `dlq_event_stream` instead of being lost.

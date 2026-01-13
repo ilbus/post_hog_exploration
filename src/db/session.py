@@ -1,16 +1,15 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from src.config import settings
 
-# check if production
-is_production = os.getenv("ENVIRONMENT") == "prd"
+# check if production (no longer needed, handled by settings defaults/env vars)
+# is_production = os.getenv("ENVIRONMENT") == "prd"
 
 engine = create_engine(
     settings.DATABASE_URL,
-    pool_size=20 if is_production else 5,
-    max_overflow=10 if is_production else 0,
+    pool_size=settings.POOL_SIZE,
+    max_overflow=settings.MAX_OVERFLOW,
     pool_timeout=30,
     pool_pre_ping=True,
 )
@@ -29,8 +28,8 @@ def get_db():
 # Adding async setup
 async_engine = create_async_engine(
     settings.ASYNC_DATABASE_URL,
-    pool_size=20 if is_production else 5,
-    max_overflow=10 if is_production else 0,
+    pool_size=settings.POOL_SIZE,
+    max_overflow=settings.MAX_OVERFLOW,
     pool_timeout=30,
     pool_pre_ping=True,
 )

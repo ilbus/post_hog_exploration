@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -16,10 +16,11 @@ class Settings(BaseSettings):
     BATCH_SIZE: int = 100
     FLUSH_INTERVAL: float = 2.0  # seconds
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "ignore"
+    # db pool settings
+    POOL_SIZE: int = 5
+    MAX_OVERFLOW: int = 10
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 settings = Settings()

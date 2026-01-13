@@ -4,6 +4,40 @@ services:
     ports:
       - "6379:6379"
 
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      # Override localhost with service names
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      ASYNC_DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      REDIS_URL: redis://redis:6379/0
+      # Pass through other secrets
+      API_SECRET_KEY: ${API_SECRET_KEY}
+      QUEUE_NAME: ${QUEUE_NAME}
+      DLQ_NAME: ${DLQ_NAME}
+      ENVIRONMENT: production
+    command: uv run uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+
+  worker:
+    build: .
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      ASYNC_DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      REDIS_URL: redis://redis:6379/0
+      API_SECRET_KEY: ${API_SECRET_KEY}
+      QUEUE_NAME: ${QUEUE_NAME}
+      DLQ_NAME: ${DLQ_NAME}
+      ENVIRONMENT: production
+    command: uv run python -m src.worker.main
+
   db:
     image: postgres:15-alpine
     environment:

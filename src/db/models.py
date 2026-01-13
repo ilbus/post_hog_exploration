@@ -11,4 +11,4 @@ class EventModel(Base):
     session_id = Column(String, index=True)
     semantic_label = Column(String)
     raw_payload = Column(JSON)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime(timezone=True))
